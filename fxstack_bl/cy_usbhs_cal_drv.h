@@ -34,6 +34,10 @@
 #define CY_EXTERNAL_CLK_PIN     (P5_1_PIN) /*XTALIN: P5_0, XTALOUT: P5_1*/
 
 
+#define USBHSPHY_AFE_CONTROL_1_CTLE_SEL_POS     (16u)
+#define USBHSPHY_AFE_CONTROL_1_CTLE_SEL_MASK    (0x70000u)
+
+
 /* Enumeration of possible clock sources for USB2 PLL REFCLK */
 typedef enum cy_en_usb2_ref_clk_src_t
 {
@@ -51,6 +55,20 @@ typedef enum cy_en_usbhs_cal_test_mode_ {
     CY_USBHS_CAL_TEST_MODE_TEST_RESERVED
 }cy_en_usbhs_cal_test_mode_t;
 
+/* USB2 HS CTLE Level Selection (Table 21)
+ * Controls the Continuous Time Linear Equalizer (CTLE) level
+ * for USB2 High Speed operation, measured in dB @ 240MHz
+ */
+typedef enum cy_en_hs_ctle_sel_t{
+    HS_CTLE_SEL_0 = 0, /* Default: min=0.0dB, nom=0.0dB, max=0.0dB */
+    HS_CTLE_SEL_1 = 1, /* min=0.5dB, nom=0.6dB, max=0.7dB          */
+    HS_CTLE_SEL_2 = 2, /* min=0.9dB, nom=1.1dB, max=1.3dB          */
+    HS_CTLE_SEL_3 = 3, /* min=1.4dB, nom=1.6dB, max=1.8dB          */
+    HS_CTLE_SEL_4 = 4, /* min=1.9dB, nom=2.2dB, max=2.5dB          */
+    HS_CTLE_SEL_5 = 5, /* min=2.4dB, nom=2.8dB, max=3.2dB          */
+    HS_CTLE_SEL_6 = 6, /* min=2.9dB, nom=3.4dB, max=3.9dB          */
+    HS_CTLE_SEL_7 = 7, /* min=3.4dB, nom=4.0dB, max=4.6dB          */
+} cy_en_hs_ctle_sel_t;
 
 /* main data structure which represent CAL layer */
 typedef struct cy_stc_usb_cal_ctxt_
@@ -200,6 +218,11 @@ cy_en_usb_cal_ret_code_t Cy_USBHS_Cal_SetControllerSpeed
                                                cy_en_usb_speed_t speed);
 
 cy_en_usb_cal_ret_code_t Cy_USBHS_Cal_HandleReset(cy_stc_usb_cal_ctxt_t *pCalCtxt);
+
+cy_en_usb_cal_ret_code_t
+Cy_USBHS_Cal_SetCtleSelValue(cy_stc_usb_cal_ctxt_t *pCalCtxt, 
+        cy_en_hs_ctle_sel_t ctleSel);
+
 
 #endif /* (!defined(CY_USBHS_CAL_DRV_H)) */
 

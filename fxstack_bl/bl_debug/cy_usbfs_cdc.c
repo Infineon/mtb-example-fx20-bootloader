@@ -236,20 +236,19 @@ static volatile cy_usbfs_devhandle_t gl_usb = {0};
 static void usb_intr_high_handler(void);
 
 /*******************************************************************************
- * Function name: CyUsbFsCdc_ControlDataReceive
+ * Function name: CyUsbFsCdc_IsPortEnabled
  ****************************************************************************//**
  *
- * Control the handling of data received through the USBFS CDC interface.
- * When data receive is not enabled, the driver will keep discarding any data
- * received on the OUT endpoint. When data receive is enabled, it is expected
- * that the user will queue read operations to fetch the OUT data as required.
+ * Check whether the Virtual COM port has been enabled using the
+ * SET_CONTROL_LINE_STATE command. Debug module should not block on data sent
+ * until the port gets enabled.
  *
- * \param recvEnable
- * Whether data receive handling is enabled.
+ * \return
+ * true if the port is enabled, false otherwise.
  *******************************************************************************/
-void CyUsbFsCdc_ControlDataReceive (bool recvEnable)
+bool CyUsbFsCdc_IsPortEnabled (void)
 {
-    gl_usb.cdcRecvEnabled = recvEnable;
+    return ((gl_usb.state == USBFS_STATE_CONFIGURED) && (gl_usb.portEnabled));
 }
 
 /*******************************************************************************
@@ -275,6 +274,7 @@ bool CyUsbFsCdc_Init (void)
 
     /* Initialize the USB software state machine. */
     gl_usb.state = USBFS_STATE_DISABLED;
+    gl_usb.portEnabled = false;
 
     /* Setup the default CDC configuration. */
     gl_usb.cdcConfig[0] = 0x00;
@@ -1135,14 +1135,12 @@ static bool usb_ep0_cdc_rqt_handler (cy_stc_usb_setup_pkt_t *pkt)
             if (gl_usb.state == USBFS_STATE_CONFIGURED)
             {
                 status = CyUsbFsCdc_CompleteEp0Status();
+                gl_usb.portEnabled = true;
 
-                /* If user data receive is not enabled, enable the OUT EP so that we can fetch
+                /* Enable the OUT EP so that we can fetch
                  * and discard the OUT data.
                  */
-                if (!gl_usb.cdcRecvEnabled)
-                {
-                    CyUsbFsCdc_QueueEpRead(2);
-                }
+                CyUsbFsCdc_QueueEpRead(2);
             }
             break;
 
@@ -1844,7 +1842,8 @@ static void usb_reset_int_handler (void)
     USBFS0_USBDEV->CR0    = USBFS_USBDEV_CR0_USB_ENABLE_Msk;
     USBFS0_USBDEV->EP0_CR = USBDEV_EP_MODE_NAK_INOUT;
 
-    gl_usb.state     = USBFS_STATE_RESET;
+    gl_usb.state       = USBFS_STATE_RESET;
+    gl_usb.portEnabled = false;
 
     /* Clear the remote wake up bit in device status. */
     gl_usb.dev_stat &= ~(0x02);
@@ -1909,14 +1908,7 @@ static void usb_intr_high_handler (void)
     if (USBFS0_USBLPM->INTR_CAUSE_HI & USBFS_USBLPM_INTR_CAUSE_HI_EP2_INTR_Msk)
     {
         USBFS0_USBDEV->SIE_EP_INT_SR = 0x02UL;
-        if (gl_usb.cdcRecvEnabled)
-        {
-            Cy_Debug_HandleReadIntr();
-        }
-        else
-        {
-            CyUsbFsCdc_DiscardOutData();
-        }
+        CyUsbFsCdc_DiscardOutData();
     }
 }
 

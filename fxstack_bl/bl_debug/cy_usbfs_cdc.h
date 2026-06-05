@@ -194,7 +194,7 @@ typedef struct
     cy_stc_usbfs_epinfo_t ep_handle[USBFS_NUM_EP + 1];        /**< Endpoint handles for internal state machine. */
 
     uint8_t cdcConfig[8];               /**< CDC SET/GET line coding data buffer. */
-    bool    cdcRecvEnabled;             /**< Whether CDC data receive is enabled by user. */
+    bool    portEnabled;                /**< Whether VCOM port has been enabled by the host. */
 } cy_usbfs_devhandle_t;
 
 #ifndef DOXYGEN
@@ -578,6 +578,19 @@ bool CyUsbFsCdc_EpFlush(uint8_t ep_index);
  * Whether data receive handling is enabled.
  *******************************************************************************/
 void CyUsbFsCdc_ControlDataReceive(bool recvEnable);
+
+/*******************************************************************************
+ * Function name: CyUsbFsCdc_IsPortEnabled
+ ****************************************************************************//**
+ *
+ * Check whether the Virtual COM port has been enabled using the
+ * SET_CONTROL_LINE_STATE command. Debug module should not block on data sent
+ * until the port gets enabled.
+ *
+ * \return
+ * true if the port is enabled, false otherwise.
+ *******************************************************************************/
+bool CyUsbFsCdc_IsPortEnabled(void);
 
 /** \} group_usbfxstack_fx_utils_functions */
 

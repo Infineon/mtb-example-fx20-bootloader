@@ -6,33 +6,33 @@ The USB bootloader occupies the first 32 KB of the on-chip flash memory and leav
 
 The last 512 bytes of the on-chip flash is expected to store an SHA256 checksum calculated over the rest of the application-specific flash contents. The bootloader makes use of this checksum to verify the integrity of the application before transferring control to it. The checksum is calculated and appended to the application HEX file by the post build commands provided in every EZ-USB&trade; FX code example.
 
-If a valid application is not found in the flash, the bootloader proceeds to enumerate as a High-Speed USB vendor class device. The EZ-USB&trade FX Control Center application can be used to exercise the programming features of the bootloader. It supports programming a provided application hex file onto the internal flash. It also supports programming FPGA binaries to the external SPI flash module available on the EZ-USB&trade; FX development kits. 
+If a valid application is not found in the flash, the bootloader proceeds to enumerate as a High-Speed USB vendor class device. The EZ-USB&trade; FX Control Center application can be used to exercise the programming features of the bootloader. It supports programming a provided application hex file onto the internal flash. It also supports programming FPGA binaries to the external SPI flash module available on the EZ-USB&trade; FX development kits.
 
-For more details, see the Help on the EZ-USB&trade FX Control Center application.
+For more details, see the Help on the EZ-USB&trade; FX Control Center application.
 
 > **Note:** This bootloader project is also applicable to EZ-USB&trade; FX10, EZ-USB&trade; FX5N, and EZ-USB&trade; FX5 devices.
 
 [View this README on GitHub.](https://github.com/Infineon/mtb-example-fx20-bootloader)
 
-[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyNDE2MTgiLCJTcGVjIE51bWJlciI6IjAwMi00MTYxOCIsIkRvYyBUaXRsZSI6IkVaLVVTQiZ0cmFkZTsgRlggYm9vdGxvYWRlciIsInJpZCI6ImFubnIiLCJEb2MgdmVyc2lvbiI6IjEuMC4wIiwiRG9jIExhbmd1YWdlIjoiRW5nbGlzaCIsIkRvYyBEaXZpc2lvbiI6Ik1DRCIsIkRvYyBCVSI6IldJUkVEIiwiRG9jIEZhbWlseSI6IlNTX1VTQiJ9)
+[Provide feedback on this code example.](https://yourvoice.infineon.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyNDE2MTgiLCJTcGVjIE51bWJlciI6IjAwMi00MTYxOCIsIkRvYyBUaXRsZSI6IkVaLVVTQiZ0cmFkZTsgRlggYm9vdGxvYWRlciIsInJpZCI6ImFzaHdpbi5uYWlyQGluZmluZW9uLmNvbSIsIkRvYyB2ZXJzaW9uIjoiMS4wLjEiLCJEb2MgTGFuZ3VhZ2UiOiJFbmdsaXNoIiwiRG9jIERpdmlzaW9uIjoiTUNEIiwiRG9jIEJVIjoiV0lSRUQiLCJEb2MgRmFtaWx5IjoiU1NfVVNCIn0=)
 
 
 ## Requirements
 
-- [ModusToolbox&trade;](https://www.infineon.com/modustoolbox) v3.5 or later (tested with v3.5)
+- [ModusToolbox&trade; v3.5 or later](https://www.infineon.com/modustoolbox?utm_campaign=202602_glob_en_pss.p.supsp_usb&utm_medium=3rdptmedia&utm_source=github_repository&utm_content=website_productpage&utm_term=fxbootloader&uid=ci0108940001&aid=ai010894) (tested with v3.5)
 - Board support package (BSP) minimum required version: 4.3.3
 - Programming language: C
 
 
 ## Supported toolchains (make variable 'TOOLCHAIN')
 
-- GNU Arm&reg; Embedded Compiler v11.3.1 (`GCC_ARM`) – Default value of `TOOLCHAIN`
+- GNU Arm&reg; Embedded Compiler v14.2.1 (`GCC_ARM`) – Default value of `TOOLCHAIN`
 - Arm&reg; Compiler v6.22 (`ARM`)
 
 
 ## Supported kits (make variable 'TARGET')
 
-- [EZ-USB&trade; FX20 DVK](https://www.infineon.com/fx20) (`KIT_FX20_FMC_001`) – Default value of `TARGET`
+- [EZ-USB&trade; FX20 DVK](https://www.infineon.com/evaluation-board/KIT-FX20-FMC-001?utm_campaign=202602_glob_en_pss.p.supsp_usb&utm_medium=3rdptmedia&utm_source=github_repository&utm_content=website_boardpage&utm_term=fxbootloader&uid=ci0108940002&aid=ai010894) (`KIT_FX20_FMC_001`) – Default value of `TARGET`
 
 
 ## Hardware setup
@@ -43,9 +43,9 @@ You need a Miniprog4 to program the bootloader hex file to the device.
 
 ## Software setup
 
-See the [ModusToolbox&trade; tools package installation guide](https://www.infineon.com/ModusToolboxInstallguide) for information about installing and configuring the tools package.
+- See the [ModusToolbox&trade; tools package installation guide](https://www.infineon.com/document-promo/infineon-modustoolbox-software-installation-guide-gettingstarted-en_6c67405e-0877-40e9-ab99-18759b12b102?utm_campaign=202602_glob_en_pss.p.supsp_usb&utm_medium=3rdptmedia&utm_source=github_repository&utm_content=website_eventpage&utm_term=fxbootloader&uid=ci0108940013&aid=ai010894) for information about installing and configuring the tools package
 
-- Install the [EZ-USB&trade; FX Control Center](https://softwaretools.infineon.com/tools/com.ifx.tb.tool.ezusbfxcontrolcenter) application to help with device programming 
+- Install the [EZ-USB&trade; FX Control Center](https://softwaretools.infineon.com/tools/com.ifx.tb.tool.ezusbfxcontrolcenter?utm_campaign=202602_glob_en_pss.p.supsp_usb&utm_medium=3rdptmedia&utm_source=github_repository&utm_content=website_productpage&utm_term=fxbootloader&uid=ci0108940003&aid=ai010894) application to help with device programming
 
 
 ## Using the code example
@@ -59,7 +59,7 @@ The ModusToolbox&trade; tools package provides the Project Creator as both a GUI
 
 1. Open the Project Creator GUI tool
 
-   There are several ways to do this, including launching it from the dashboard or from inside the Eclipse IDE. For more details, see the [Project Creator user guide](https://www.infineon.com/ModusToolboxProjectCreator) (locally available at *{ModusToolbox&trade; install directory}/tools_{version}/project-creator/docs/project-creator.pdf*)
+   There are several ways to do this, including launching it from the dashboard or from inside the Eclipse IDE. For more details, see the [Project Creator user guide](https://www.infineon.com/document-promo/infineon-modustoolbox-project-creator-user-guide-usermanual-en_83d9e435-643c-4353-9d40-fa7bca5e7720?utm_campaign=202602_glob_en_pss.p.supsp_usb&utm_medium=3rdptmedia&utm_source=github_repository&utm_content=docs_userguide&utm_term=fxbootloader&uid=ci0108940004&aid=ai010894) (locally available at *{ModusToolbox&trade; install directory}/tools_{version}/project-creator/docs/project-creator.pdf*)
 
 2. On the **Choose Board Support Package (BSP)** page, select a kit supported by this code example. See [Supported kits](#supported-kits-make-variable-target)
 
@@ -105,7 +105,7 @@ Argument | Description | Required/optional
 
 <br>
 
-> **Note:** The project-creator-cli tool uses the `git clone` and `make getlibs` commands to fetch the repository and import the required libraries. For details, see the "Project creator tools" section of the [ModusToolbox&trade; tools package user guide](https://www.infineon.com/ModusToolboxUserGuide) (locally available at {ModusToolbox&trade; install directory}/docs_{version}/mtb_user_guide.pdf).
+> **Note:** The project-creator-cli tool uses the `git clone` and `make getlibs` commands to fetch the repository and import the required libraries. For details, see the "Project creator tools" section of the [ModusToolbox&trade; tools package user guide](https://www.infineon.com/document-promo/infineon-modustoolbox-tools-package-user-guide-gettingstarted-en_231b37fd-6dc2-4e85-b587-2542043c8b8d?utm_campaign=202602_glob_en_pss.p.supsp_usb&utm_medium=3rdptmedia&utm_source=github_repository&utm_content=docs_userguide&utm_term=fxbootloader&uid=ci0108940005&aid=ai010894) (locally available at {ModusToolbox&trade; install directory}/docs_{version}/mtb_user_guide.pdf).
 
 </details>
 
@@ -119,7 +119,7 @@ After the project has been created, you can open it in your preferred developmen
 
 If you opened the Project Creator tool from the included Eclipse IDE, the project will open in Eclipse automatically.
 
-For more details, see the [Eclipse IDE for ModusToolbox&trade; user guide](https://www.infineon.com/MTBEclipseIDEUserGuide) (locally available at *{ModusToolbox&trade; install directory}/docs_{version}/mt_ide_user_guide.pdf*).
+For more details, see the [Eclipse IDE for ModusToolbox&trade; user guide](https://www.infineon.com/document-promo/infineon-modustoolbox-eclipse-ide-user-guide-usermanual-en_cc5e5dff-54e7-48f8-82fc-d0157f732a67?utm_campaign=202602_glob_en_pss.p.supsp_usb&utm_medium=3rdptmedia&utm_source=github_repository&utm_content=docs_userguide&utm_term=fxbootloader&uid=ci0108940006&aid=ai010894) (locally available at *{ModusToolbox&trade; install directory}/docs_{version}/mt_ide_user_guide.pdf*).
 
 </details>
 
@@ -128,7 +128,7 @@ For more details, see the [Eclipse IDE for ModusToolbox&trade; user guide](https
 
 Launch VS Code manually, and then open the generated *{project-name}.code-workspace* file located in the project directory.
 
-For more details, see the [Visual Studio Code for ModusToolbox&trade; user guide](https://www.infineon.com/MTBVSCodeUserGuide) (locally available at *{ModusToolbox&trade; install directory}/docs_{version}/mt_vscode_user_guide.pdf*).
+For more details, see the [Visual Studio Code for ModusToolbox&trade; user guide](https://www.infineon.com/document-promo/infineon-visual-studio-code-user-guide-usermanual-en_60d79bb8-6e50-4d28-9ef3-f14b1a546046?utm_campaign=202602_glob_en_pss.p.supsp_usb&utm_medium=3rdptmedia&utm_source=github_repository&utm_content=docs_userguide&utm_term=fxbootloader&uid=ci0108940007&aid=ai010894) (locally available at *{ModusToolbox&trade; install directory}/docs_{version}/mt_vscode_user_guide.pdf*).
 
 </details>
 
@@ -137,7 +137,7 @@ For more details, see the [Visual Studio Code for ModusToolbox&trade; user guide
 
 If you prefer to use the CLI, open the appropriate terminal, and navigate to the project directory. On Windows, use the command-line 'modus-shell' program; on Linux and macOS, you can use any terminal application. From there, you can run various `make` commands.
 
-For more details, see the [ModusToolbox&trade; tools package user guide](https://www.infineon.com/ModusToolboxUserGuide) (locally available at *{ModusToolbox&trade; install directory}/docs_{version}/mtb_user_guide.pdf*).
+For more details, see the [ModusToolbox&trade; tools package user guide](https://www.infineon.com/document-promo/infineon-modustoolbox-tools-package-user-guide-gettingstarted-en_231b37fd-6dc2-4e85-b587-2542043c8b8d?utm_campaign=202602_glob_en_pss.p.supsp_usb&utm_medium=3rdptmedia&utm_source=github_repository&utm_content=docs_userguide&utm_term=fxbootloader&uid=ci0108940005&aid=ai010894) (locally available at *{ModusToolbox&trade; install directory}/docs_{version}/mtb_user_guide.pdf*).
 
 </details>
 
@@ -258,7 +258,7 @@ You can debug the example to step through the code.
 
 <details><summary><b>In Eclipse IDE</b></summary>
 
-Use the **\<Application Name> Debug (KitProg3_MiniProg4)** configuration in the **Quick Panel**. For details, see the "Program and debug" section in the [Eclipse IDE for ModusToolbox&trade; user guide](https://www.infineon.com/MTBEclipseIDEUserGuide).
+Use the **\<Application Name> Debug (KitProg3_MiniProg4)** configuration in the **Quick Panel**. For details, see the "Program and debug" section in the [Eclipse IDE for ModusToolbox&trade; user guide](https://www.infineon.com/document-promo/infineon-modustoolbox-eclipse-ide-user-guide-usermanual-en_cc5e5dff-54e7-48f8-82fc-d0157f732a67?utm_campaign=202602_glob_en_pss.p.supsp_usb&utm_medium=3rdptmedia&utm_source=github_repository&utm_content=docs_userguide&utm_term=fxbootloader&uid=ci0108940006&aid=ai010894).
 
 </details>
 
@@ -306,13 +306,13 @@ Application functionality can be customized by setting variables in *Makefile* o
 
 Resources  | Links
 -----------|----------------------------------
-Application notes  | [AN237841](https://www.infineon.com/dgdl/Infineon-Getting_started_with_EZ_USB_FX20_FX10_FX5N_FX5-ApplicationNotes-v01_00-EN.pdf?fileId=8ac78c8c956a0a470195a515c54916e1) – Getting started with EZ-USB&trade; FX20/FX10/FX5N/FX5
+Application notes  | [AN237841](https://www.infineon.com/document-promo/infineon-getting-started-with-ez-usb-fx20-fx10-fx5n-fx5-applicationnotes-en_9fbbff93-43d1-4aec-804f-b0dd911e3d10?utm_campaign=202602_glob_en_pss.p.supsp_usb&utm_medium=3rdptmedia&utm_source=github_repository&utm_content=docs_applicationnote&utm_term=fxbootloader&uid=ci0108940008&aid=ai010894) – Getting started with EZ-USB&trade; FX20/FX10/FX5N/FX5
 Code examples  | [Using ModusToolbox&trade;](https://github.com/Infineon/Code-Examples-for-ModusToolbox-Software) on GitHub
-Device documentation | [EZ-USB&trade; FX20 datasheets](https://www.infineon.com/fx20)
-Development kits | Select your kits from the [Evaluation board finder](https://www.infineon.com/cms/en/design-support/finder-selection-tools/product-finder/evaluation-board)
+Device documentation | [EZ-USB&trade; FX20 datasheets](https://www.infineon.com/document-promo/infineon-cyusb402x-ez-usb-fx20-usb-20-gbps-peripheral-controller-datasheet-en_1bf09735-a0df-42c1-86c1-335cbaf4452c?utm_campaign=202602_glob_en_pss.p.supsp_usb&utm_medium=3rdptmedia&utm_source=github_repository&utm_content=docs_datasheet&utm_term=fxbootloader&uid=ci0108940009&aid=ai010894)
+Development kits | Select your kits from the [Evaluation board finder](https://www.infineon.com/cms/en/design-support/finder-selection-tools/product-finder/evaluation-board?utm_campaign=202602_glob_en_pss.p.supsp_usb&utm_medium=3rdptmedia&utm_source=github_repository&utm_content=website_productpage&utm_term=fxbootloader&uid=ci0108940010&aid=ai010894)
 Libraries on GitHub  | [mtb-pdl-cat1](https://github.com/Infineon/mtb-pdl-cat1) – Peripheral Driver Library (PDL)
 Middleware on GitHub  | [usbfxstack](https://github.com/Infineon/usbfxstack) – USBFX Stack middleware library and docs
-Tools  | [ModusToolbox&trade;](https://www.infineon.com/modustoolbox) – ModusToolbox&trade; software is a collection of easy-to-use libraries and tools enabling rapid development with Infineon MCUs for applications ranging from wireless and cloud-connected systems, edge AI/ML, embedded sense and control, to wired USB connectivity using PSOC&trade; Industrial/IoT MCUs, AIROC&trade; Wi-Fi and Bluetooth&reg; connectivity devices, XMC&trade; Industrial MCUs, and EZ-USB&trade;/EZ-PD&trade; wired connectivity controllers. ModusToolbox&trade; incorporates a comprehensive set of BSPs, HAL, libraries, configuration tools, and provides support for industry-standard IDEs to fast-track your embedded application development
+Tools  | [ModusToolbox&trade;](https://www.infineon.com/modustoolbox?utm_campaign=202602_glob_en_pss.p.supsp_usb&utm_medium=3rdptmedia&utm_source=github_repository&utm_content=website_productpage&utm_term=fxbootloader&uid=ci0108940001&aid=ai010894) – ModusToolbox&trade; software is a collection of easy-to-use libraries and tools enabling rapid development with Infineon MCUs for applications ranging from wireless and cloud-connected systems, edge AI/ML, embedded sense and control, to wired USB connectivity using PSOC&trade; Industrial/IoT MCUs, AIROC&trade; Wi-Fi and Bluetooth&reg; connectivity devices, XMC&trade; Industrial MCUs, and EZ-USB&trade;/EZ-PD&trade; wired connectivity controllers. ModusToolbox&trade; incorporates a comprehensive set of BSPs, HAL, libraries, configuration tools, and provides support for industry-standard IDEs to fast-track your embedded application development
 
 <br>
 
@@ -320,6 +320,9 @@ Tools  | [ModusToolbox&trade;](https://www.infineon.com/modustoolbox) – ModusT
 ## Other resources
 
 Infineon provides a wealth of data at [www.infineon.com](https://www.infineon.com) to help you select the right device, and quickly and effectively integrate it into your design.
+
+[Peripheral controllers for USB 3.2 homepage](https://www.infineon.com/products/universal-serial-bus/usb-3-2-peripheral-controllers?utm_campaign=202602_glob_en_pss.p.supsp_usb&utm_medium=3rdptmedia&utm_source=github_repository&utm_content=website_productpage&utm_term=fxbootloader&uid=ci0108940011&aid=ai010894)<br>
+[Peripheral controllers for USB 3.2 webinar](https://www.infineon.com/event/webinar/2025/usb1020gbps?utm_campaign=202602_glob_en_pss.p.supsp_usb&utm_medium=3rdptmedia&utm_source=github_repository&utm_content=website_eventpage&utm_term=fxbootloader&uid=ci0108940012&aid=ai010894)
 
 
 ## Document history
@@ -329,6 +332,8 @@ Document title: *CE241618* – *EZ-USB&trade; FX bootloader*
  Version | Description of change
  ------- | ---------------------
  1.0.0   | New code example
+ 1.0.1   | Updated to use the correct linker script when building for debug configuration
+
 <br>
 
 
@@ -340,7 +345,7 @@ PSOC&trade;, formerly known as PSoC&trade;, is a trademark of Infineon Technolog
 
 ---------------------------------------------------------
 
-© Cypress Semiconductor Corporation, 2025. This document is the property of Cypress Semiconductor Corporation, an Infineon Technologies company, and its affiliates ("Cypress").  This document, including any software or firmware included or referenced in this document ("Software"), is owned by Cypress under the intellectual property laws and treaties of the United States and other countries worldwide.  Cypress reserves all rights under such laws and treaties and does not, except as specifically stated in this paragraph, grant any license under its patents, copyrights, trademarks, or other intellectual property rights.  If the Software is not accompanied by a license agreement and you do not otherwise have a written agreement with Cypress governing the use of the Software, then Cypress hereby grants you a personal, non-exclusive, nontransferable license (without the right to sublicense) (1) under its copyright rights in the Software (a) for Software provided in source code form, to modify and reproduce the Software solely for use with Cypress hardware products, only internally within your organization, and (b) to distribute the Software in binary code form externally to end users (either directly or indirectly through resellers and distributors), solely for use on Cypress hardware product units, and (2) under those claims of Cypress's patents that are infringed by the Software (as provided by Cypress, unmodified) to make, use, distribute, and import the Software solely for use with Cypress hardware products.  Any other use, reproduction, modification, translation, or compilation of the Software is prohibited.
+© Cypress Semiconductor Corporation, 2026. This document is the property of Cypress Semiconductor Corporation, an Infineon Technologies company, and its affiliates ("Cypress").  This document, including any software or firmware included or referenced in this document ("Software"), is owned by Cypress under the intellectual property laws and treaties of the United States and other countries worldwide.  Cypress reserves all rights under such laws and treaties and does not, except as specifically stated in this paragraph, grant any license under its patents, copyrights, trademarks, or other intellectual property rights.  If the Software is not accompanied by a license agreement and you do not otherwise have a written agreement with Cypress governing the use of the Software, then Cypress hereby grants you a personal, non-exclusive, nontransferable license (without the right to sublicense) (1) under its copyright rights in the Software (a) for Software provided in source code form, to modify and reproduce the Software solely for use with Cypress hardware products, only internally within your organization, and (b) to distribute the Software in binary code form externally to end users (either directly or indirectly through resellers and distributors), solely for use on Cypress hardware product units, and (2) under those claims of Cypress's patents that are infringed by the Software (as provided by Cypress, unmodified) to make, use, distribute, and import the Software solely for use with Cypress hardware products.  Any other use, reproduction, modification, translation, or compilation of the Software is prohibited.
 <br>
 TO THE EXTENT PERMITTED BY APPLICABLE LAW, CYPRESS MAKES NO WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, WITH REGARD TO THIS DOCUMENT OR ANY SOFTWARE OR ACCOMPANYING HARDWARE, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  No computing device can be absolutely secure.  Therefore, despite security measures implemented in Cypress hardware or software products, Cypress shall have no liability arising out of any security breach, such as unauthorized access to or use of a Cypress product. CYPRESS DOES NOT REPRESENT, WARRANT, OR GUARANTEE THAT CYPRESS PRODUCTS, OR SYSTEMS CREATED USING CYPRESS PRODUCTS, WILL BE FREE FROM CORRUPTION, ATTACK, VIRUSES, INTERFERENCE, HACKING, DATA LOSS OR THEFT, OR OTHER SECURITY INTRUSION (collectively, "Security Breach").  Cypress disclaims any liability relating to any Security Breach, and you shall and hereby do release Cypress from any claim, damage, or other liability arising from any Security Breach.  In addition, the products described in these materials may contain design defects or errors known as errata which may cause the product to deviate from published specifications. To the extent permitted by applicable law, Cypress reserves the right to make changes to this document without further notice. Cypress does not assume any liability arising out of the application or use of any product or circuit described in this document. Any information provided in this document, including any sample design information or programming code, is provided only for reference purposes.  It is the responsibility of the user of this document to properly design, program, and test the functionality and safety of any application made of this information and any resulting product.  "High-Risk Device" means any device or system whose failure could cause personal injury, death, or property damage.  Examples of High-Risk Devices are weapons, nuclear installations, surgical implants, and other medical devices.  "Critical Component" means any component of a High-Risk Device whose failure to perform can be reasonably expected to cause, directly or indirectly, the failure of the High-Risk Device, or to affect its safety or effectiveness.  Cypress is not liable, in whole or in part, and you shall and hereby do release Cypress from any claim, damage, or other liability arising from any use of a Cypress product as a Critical Component in a High-Risk Device. You shall indemnify and hold Cypress, including its affiliates, and its directors, officers, employees, agents, distributors, and assigns harmless from and against all claims, costs, damages, and expenses, arising out of any claim, including claims for product liability, personal injury or death, or property damage arising from any use of a Cypress product as a Critical Component in a High-Risk Device. Cypress products are not intended or authorized for use as a Critical Component in any High-Risk Device except to the limited extent that (i) Cypress's published data sheet for the product explicitly states Cypress has qualified the product for use in a specific High-Risk Device, or (ii) Cypress has given you advance written authorization to use the product as a Critical Component in the specific High-Risk Device and you have signed a separate indemnification agreement.
 <br>

@@ -61,7 +61,8 @@ TOOLCHAIN=GCC_ARM
 
 # Default build configuration. Options include:
 #
-# Debug -- build with minimal optimizations, focus on debugging.
+# Debug -- build with minimal optimizations, focus on debugging
+#          Debug build enables logs over USBFS or SCB; select the interface with the ENABLE_USBFS_DEBUG macro
 # Release -- build with full optimizations
 # Custom -- build with custom configuration, set the optimization flag in CFLAGS
 #
@@ -117,8 +118,7 @@ DEFINES= \
         CYBSP_CUSTOM_SYSCLK_PM_CALLBACK=1 \
         CY_CRYPTO_USER_CONFIG_FILE=\"crypto_ip_cfg.h\"
 	
-DEBUG?=no
-ifeq ($(DEBUG),yes)
+ifeq ($(CONFIG),Debug)
 $(info Debug enabled in this build. Disable to save code space)
     DEFINES += \
         DEBUG_INFRA_EN=1 \
@@ -173,8 +173,8 @@ endif
 
 # Path to the linker script to use (if empty, use the default linker script).
 # Use linker script for CM0P core
-ifeq ($(DEBUG),yes)
-$(warning Flash area limit increased to support DEBUG=yes. Make appropriate changes in user application's flash area to enable switch to user application)
+ifeq ($(CONFIG),Debug)
+$(warning Flash area limit increased to support CONFIG=Debug. Make appropriate changes in user application's flash area to enable switch to user application)
 LINKER_SCRIPT = $(if $(filter GCC_ARM,$(TOOLCHAIN)),fx_cm0plus_debug.ld,fx_cm0plus_debug.sct)
 else
 LINKER_SCRIPT = $(if $(filter GCC_ARM,$(TOOLCHAIN)),fx_cm0plus.ld,fx_cm0plus.sct)

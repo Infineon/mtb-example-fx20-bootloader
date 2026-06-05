@@ -96,14 +96,9 @@ Cy_USB_USBD_Init (void *pAppCtxt, cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
 
     /* Initialize the USBHS and USBSS IP */
     Cy_USBHS_Cal_InitUsbController(pUsbdCtxt->pCalCtxt, pUsbdCtxt, Cy_USBD_ProcessMsg);
-#if BL_DEBUG
-    DBG_USBD_INFO("InitControllerCalled......\r\n");
-#endif
+    Cy_USBD_SelectCtleConfig(pUsbdCtxt, HS_CTLE_SEL_5);
     Cy_USB_USBD_EndpInit(pUsbdCtxt);
     retCode = Cy_USB_USBD_cpuDmaInit(pUsbdCtxt);
-#if BL_DEBUG
-    DBG_USBD_INFO("CPUDmaInitCalled............\r\n");
-#endif
 
     /* Make State Enable, enable interrupt, and then make device visible. */
     pUsbdCtxt->prevDevState = pUsbdCtxt->devState;
@@ -134,7 +129,7 @@ Cy_USBD_RegisterCallback (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
 
     if (NULL == pUsbdCtxt) {
 #if BL_DEBUG
-        DBG_USBD_ERR("RegCal:usbdCtxtNull\r\n");
+        DBG_USBD_ERR("RegCb:usbdCtxtNull\r\n");
 #endif
         return(CY_USBD_STATUS_CTXT_NULL);
     }
@@ -194,7 +189,7 @@ Cy_USBD_RegisterCallback (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
 
         default:
 #if BL_DEBUG
-            DBG_USBD_ERR("RegCal:default\r\n");
+            DBG_USBD_ERR("RegCb:default\r\n");
 #endif
             retCode = CY_USBD_STATUS_INVALID_CALLBACK_TYPE;
             break;
@@ -303,9 +298,6 @@ cy_en_usb_speed_t
 Cy_USBD_GetDeviceSpeed (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt)
 {
     if (NULL == pUsbdCtxt) {
-#if BL_DEBUG
-        DBG_USBD_ERR("GetDevSpe:usbdCtxtNull\r\n");
-#endif
         return(CY_USBD_USB_DEV_NOT_CONNECTED);
     }
     return(pUsbdCtxt->devSpeed);
@@ -353,9 +345,6 @@ Cy_USBD_GetEndpNumMaxPktDir (uint8_t *pEndpDscr, uint32_t *pEndpNum,
     }
 
     if ((pEndpNum == NULL) || (pMaxPktSize == NULL)) {
-#if BL_DEBUG
-        DBG_USBD_ERR("GetEndpNumMaxPktDir: NullPointer\r\n");
-#endif
         return (CY_USBD_STATUS_PTR_NULL);
     }
 
@@ -384,9 +373,6 @@ Cy_USBD_EnableEndp (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt, uint32_t endpNumber,
     cy_en_usbd_ret_code_t retCode;
 
     if (NULL == pUsbdCtxt) {
-#if BL_DEBUG
-        DBG_USBD_ERR("EnaEnd:usbdCtxtNull\r\n");
-#endif
         return (CY_USBD_STATUS_CTXT_NULL);
     }
 
@@ -418,9 +404,6 @@ Cy_USB_USBD_EndpConfig (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
     cy_stc_usb_endp_info_t *pEndpInfo;
 
     if (NULL == pUsbdCtxt) {
-#if BL_DEBUG
-        DBG_USBD_ERR("EndCon:usbdCtxtNull\r\n");
-#endif
         return (CY_USBD_STATUS_CTXT_NULL);
     }
 
@@ -495,9 +478,6 @@ Cy_USB_USBD_EndpSetClearStall (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
     cy_en_usb_cal_ret_code_t calRetStatus;
 
     if (NULL == pUsbdCtxt) {
-#if BL_DEBUG
-        DBG_USBD_ERR("EndSetCleSta:usbdCtxtNull\r\n");
-#endif
         return (CY_USBD_STATUS_CTXT_NULL);
     }
 
@@ -542,9 +522,6 @@ Cy_USBD_FlushEndp (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
                         cy_en_usb_endp_dir_t endpDirection)
 {
     if (NULL == pUsbdCtxt) {
-#if BL_DEBUG
-        DBG_USBD_ERR("FluResEnd:usbdCtxtNull\r\n");
-#endif
         return;
     }
 
@@ -608,9 +585,6 @@ Cy_USB_USBD_EndpSetClearNakNrdyAll (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
     cy_en_usb_cal_ret_code_t calRetStatus;
 
     if (NULL == pUsbdCtxt) {
-#if BL_DEBUG
-        DBG_USBD_ERR("EndSetCleNakNrdAll:usbdCtxtNull\r\n");
-#endif
         return (CY_USBD_STATUS_CTXT_NULL);
     }
 
@@ -656,7 +630,7 @@ Cy_USB_USBD_EndpSetClearNakNrdy (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
     cy_en_usb_cal_ret_code_t calRetStatus = CY_USB_CAL_STATUS_FAILURE;
 
     if (NULL == pUsbdCtxt) {
-        DBG_USBD_ERR("EndSetCleNakNrd:usbdCtxt Null\r\n");
+        DBG_USBD_ERR("UsbEpNak:usbdCtxt Null\r\n");
         return (CY_USBD_STATUS_CTXT_NULL);
     }
 
@@ -739,9 +713,6 @@ Cy_USBD_UpdateXferCount (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
                          uint32_t bufferSize)
 {
     if (NULL == pUsbdCtxt) {
-#if BL_DEBUG
-        DBG_USBD_ERR("UpdXfrCnt:usbdCtxtNull\r\n");
-#endif
         return;
     }
     Cy_USBHS_Cal_UpdateXferCount(pUsbdCtxt->pCalCtxt, endpNumber,
@@ -761,7 +732,7 @@ Cy_USBD_SendAckSetupDataStatusStage (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt)
 {
     if (NULL == pUsbdCtxt) {
 #if BL_DEBUG
-        DBG_USBD_ERR("SndAckSet:usbdCtxtNull\r\n");
+        DBG_USBD_ERR("AckSetup:usbdCtxtNull\r\n");
 #endif
         return;
     }
@@ -984,15 +955,12 @@ Cy_USB_USBD_SendEndp0DataHs (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
 
     if (NULL == pUsbdCtxt) {
 #if BL_DEBUG
-        DBG_USBD_ERR("SndEnd0DataHs:usbdCtxtNull\r\n");
+        DBG_USBD_ERR("Ep0Send:usbdCtxtNull\r\n");
 #endif
         return (CY_USBD_STATUS_CTXT_NULL);
     }
 
     if ((pBuffer == NULL) || (bufferSize == 0)) {
-#if BL_DEBUG
-        DBG_USBD_ERR("SndEnd0DataHs:bufferOrSizeNull\r\n");
-#endif
         return (CY_USBD_STATUS_BAD_PARAM);
     }
     Cy_USBD_UpdateXferCount(pUsbdCtxt, 0x00, CY_USB_ENDP_DIR_IN, bufferSize);
@@ -1020,12 +988,9 @@ Cy_USB_USBD_SendEndp0DataHs (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
     if (dmaIntr != 0) {
         /* Clear the DMA channel interrupt status. */
         Cy_USBD_DMAChn_ClearIntr(Cy_USBD_EP0In_DmaBase(pUsbdCtxt), pUsbdCtxt->channel0, dmaIntr);
-#if BL_DEBUG
-        DBG_USBD_TRACE("%x DONE\r\n", dmaIntr);
-#endif /* BL_DEBUG */
     } else {
 #if BL_DEBUG
-        DBG_USBD_WARN("Ep0Send TIMEOUT\r\n");
+        DBG_USBD_WARN("Ep0Send: Timeout\r\n");
 #endif
 
         /* Disable the DMA channel. */
@@ -1072,6 +1037,8 @@ Cy_USB_USBD_RecvEndp0DataHs (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
 
     /* Allow control transfer handshake. */
     Cy_USBD_SendAckSetupDataStatusStage(pUsbdCtxt);
+    
+    Cy_USBD_UpdateXferCount(pUsbdCtxt, 0x00, CY_USB_ENDP_DIR_OUT, bufferSize);  
     
     Cy_USB_USBD_CfgEndp0Dma(pUsbdCtxt, CY_USB_ENDP_DIR_OUT, pBuffer,bufferSize);
 
@@ -1122,9 +1089,6 @@ Cy_USBD_HandleGetDscr (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
     cy_en_usbd_ret_code_t retStatus = CY_USBD_STATUS_FAILURE;
 
     if (NULL == pUsbdCtxt) {
-#if BL_DEBUG
-        DBG_USBD_ERR("HndlGetDsc:usbdCtxtNull\r\n");
-#endif
         return (CY_USBD_STATUS_CTXT_NULL);
     }
 
@@ -1207,7 +1171,7 @@ Cy_USBD_HandleGetDscr (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
 
         case CY_USB_OTHERSPEED_DSCR:
 #if BL_DEBUG
-            DBG_USBD_INFO("OTHERsPEEDdscr\r\n");
+            DBG_USBD_INFO("OtherSpeedDscr\r\n");
 #endif
            /*
             * if device is operating at full speed then other speed config
@@ -1237,7 +1201,7 @@ Cy_USBD_HandleGetDscr (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
         default:
             /* Control should not reach here. */
 #if BL_DEBUG
-            DBG_USBD_INFO("UNKNOWN\r\n");
+            DBG_USBD_INFO("Unknown DSCR\r\n");
 #endif
             isReqHandledByApp = true;
             break;
@@ -1292,9 +1256,6 @@ Cy_USBD_HandleGetStatus (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
     cy_en_usbd_ret_code_t retStatus = CY_USBD_STATUS_SUCCESS;
 
     if (NULL == pUsbdCtxt) {
-#if BL_DEBUG
-        DBG_USBD_ERR("HndlGetSta:usbdCtxtNull\r\n");
-#endif
         return(CY_USBD_STATUS_CTXT_NULL);
     }
 
@@ -1382,9 +1343,6 @@ Cy_USBD_HandleSetFeature (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
     bool handled = false;
 
     if (NULL == pUsbdCtxt) {
-#if BL_DEBUG
-        DBG_USBD_ERR("HndlSetFea:usbdCtxtNull\r\n");
-#endif
         return (CY_USBD_STATUS_CTXT_NULL);
     }
 
@@ -1408,7 +1366,7 @@ Cy_USBD_HandleSetFeature (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
         /* Trigger callback */
         if (pUsbdCtxt->setupCb) {
 #if BL_DEBUG
-            DBG_USBD_INFO("setFeatureSetupClbEndp\r\n");
+            DBG_USBD_INFO("EpSetFeatureCbk\r\n");
 #endif
             pUsbdCtxt->setupCb(pUsbdCtxt->pAppCtxt, pUsbdCtxt, pMsg);
         } else {
@@ -1424,7 +1382,7 @@ Cy_USBD_HandleSetFeature (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
         /* Trigger callback */
         if (pUsbdCtxt->setupCb) {
 #if BL_DEBUG
-            DBG_USBD_INFO("setFeatureSetupClbIntf\r\n");
+            DBG_USBD_INFO("IntfSetFeatureCbk\r\n");
 #endif
             pUsbdCtxt->setupCb(pUsbdCtxt->pAppCtxt, pUsbdCtxt, pMsg);
         } else {
@@ -1478,7 +1436,7 @@ Cy_USBD_HandleClearFeature (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
         /* Trigger callback */
         if (pUsbdCtxt->setupCb) {
 #if BL_DEBUG
-            DBG_USBD_INFO("clearFeatureSetupClbEndp\r\n");
+            DBG_USBD_INFO("EpClrFeatureCbk\r\n");
 #endif
             pUsbdCtxt->setupCb(pUsbdCtxt->pAppCtxt, pUsbdCtxt, pMsg);
         } else {
@@ -1497,7 +1455,7 @@ Cy_USBD_HandleClearFeature (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
         /* Trigger callback */
         if (pUsbdCtxt->setupCb) {
 #if BL_DEBUG
-            DBG_USBD_INFO("setFeatureSetupClbIntf\r\n");
+            DBG_USBD_INFO("IntfClearFeatureCbk\r\n");
 #endif
             pUsbdCtxt->setupCb(pUsbdCtxt->pAppCtxt, pUsbdCtxt, pMsg);
         } else {
@@ -1541,8 +1499,9 @@ Cy_USBD_HandleSetConfiguration (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
      */
 
 #if BL_DEBUG
-    DBG_USBD_INFO("HNDLSETCFG\r\n");
+    DBG_USBD_INFO("HandleSetConfig\r\n");
 #endif
+
     configNum = (uint8_t)((setupReq.wValue) & (0x00FF));
 
     if (pUsbdCtxt->devSpeed == CY_USBD_USB_DEV_FS) {
@@ -1589,11 +1548,9 @@ Cy_USBD_HandleSetConfiguration (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
 
     /* Trigger callback */
     if (pUsbdCtxt->setConfigCb) {
-#if BL_DEBUG
-       DBG_USBD_INFO("SETCFGclbNt\r\n");
-#endif
        pUsbdCtxt->setConfigCb(pUsbdCtxt->pAppCtxt, pUsbdCtxt, pMsg);
     }
+
     /* No data stage so enable HW to send ACK. */
     Cy_USBD_SendAckSetupDataStatusStage(pUsbdCtxt);
     return(retStatus);
@@ -1823,9 +1780,6 @@ Cy_USBD_HandleHsGrant (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
                        cy_stc_usb_cal_msg_t *pMsg)
 {
     if (NULL == pUsbdCtxt) {
-#if BL_DEBUG
-        DBG_USBD_ERR("HndlHsGra:usbdCtxtNull\r\n");
-#endif
         return (CY_USBD_STATUS_CTXT_NULL);
     }
     /*
@@ -1931,9 +1885,6 @@ Cy_USBD_HandleCtrlXfrSetupStage (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
                 break;
 
             case CY_USB_SC_SET_ADDRESS:
-#if BL_DEBUG
-                DBG_USBD_INFO("CY_USB_SC_SET_ADDRESS\r\n");
-#endif
                 /*
                  * SET ADDRESS command handle by hw so control will not
                  * come here.
@@ -2007,9 +1958,6 @@ Cy_USBD_HandleStatusStage (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
                                     cy_stc_usb_cal_msg_t *pMsg)
 {
     if (NULL == pUsbdCtxt) {
-#if BL_DEBUG
-        DBG_USBD_ERR("HndlStaStage:usbdCtxtNull\r\n");
-#endif
         return(CY_USBD_STATUS_CTXT_NULL);
     }
     pUsbdCtxt->endp0State = CY_USB_ENDP0_STATE_IDLE;
@@ -2031,9 +1979,6 @@ Cy_USBD_HandleSuspend (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
                        cy_stc_usb_cal_msg_t *pMsg)
 {
     if (NULL == pUsbdCtxt) {
-#if BL_DEBUG
-        DBG_USBD_ERR("HndlSuspend:usbdCtxtNull\r\n");
-#endif
         return(CY_USBD_STATUS_CTXT_NULL);
     }
 
@@ -2068,9 +2013,6 @@ Cy_USBD_HandleResume (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
                       cy_stc_usb_cal_msg_t *pMsg)
 {
     if (NULL == pUsbdCtxt) {
-#if BL_DEBUG
-        DBG_USBD_ERR("HndlResume:usbdCtxtNull\r\n");
-#endif
         return(CY_USBD_STATUS_CTXT_NULL);
     }
     pUsbdCtxt->devState = pUsbdCtxt->prevDevState;
@@ -2095,9 +2037,6 @@ Cy_USBD_HandleZlp (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
                    cy_stc_usb_cal_msg_t *pMsg)
 {
     if (NULL == pUsbdCtxt) {
-#if BL_DEBUG
-        DBG_USBD_ERR("HndlZlp:usbdCtxtNull\r\n");
-#endif
         return(CY_USBD_STATUS_CTXT_NULL);
     }
     if (pUsbdCtxt->zlpCb) {
@@ -2118,9 +2057,6 @@ Cy_USBD_HandleDone (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
                    cy_stc_usb_cal_msg_t *pMsg)
 {
     if (NULL == pUsbdCtxt) {
-#if BL_DEBUG
-        DBG_USBD_ERR("HndlDone:usbdCtxtNull\r\n");
-#endif
         return(CY_USBD_STATUS_CTXT_NULL);
     }
 
@@ -2201,9 +2137,6 @@ Cy_USBD_HandleMsg (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
     cy_en_usbd_ret_code_t retStatus = CY_USBD_STATUS_SUCCESS;
 
     if (NULL == pUsbdCtxt) {
-#if BL_DEBUG
-        DBG_USBD_ERR("HndlMsg:usbdCtxtNull\r\n");
-#endif
         return (CY_USBD_STATUS_CTXT_NULL);
     }
 
@@ -2277,28 +2210,16 @@ Cy_USBD_HandleMsg (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
             break;
 
         case CY_USB_CAL_MSG_L1_SLEEP:
-#if BL_DEBUG
-            DBG_USBD_ERR("Msg:L1_SLEEPNotHandled.\r\n");
-#endif
             break;
 
         case CY_USB_CAL_MSG_RESUME_START:
-#if BL_DEBUG
-            DBG_USBD_INFO("Msg:RESUME_START\r\n");
-#endif
             Cy_USBD_HandleResume(pUsbdCtxt, pMsg);
             break;
 
         case CY_USB_CAL_MSG_RESUME_END:
-#if BL_DEBUG
-            DBG_USBD_INFO("Msg:RESUME_END\r\n");
-#endif
             break;
 
         case CY_USB_CAL_MSG_L1_URESUME:
-#if BL_DEBUG
-            DBG_USBD_ERR("Msg:L1_URESUMENotHandled.\r\n");
-#endif
             break;
 
         case CY_USB_CAL_MSG_IN_ZLP:
@@ -2312,9 +2233,6 @@ Cy_USBD_HandleMsg (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
             break;
 
         case CY_USB_CAL_MSG_ERRLIMIT:
-#if BL_DEBUG
-          DBG_USBD_TRACE("Msg:ErrorLimit\r\n");
-#endif
             break;
 
         case CY_USBSS_CAL_MSG_EPM_UNDERRUN:
@@ -2377,10 +2295,10 @@ Cy_USBD_ConnectDevice (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
         return;
     }
 
-        /* clear all dev control interrupt and enable required interrupt */
-        Cy_USBHS_Cal_ClearAllDevCtrlIntr(pUsbdCtxt->pCalCtxt);
-        Cy_USBHS_Cal_EnableReqDevCtrlIntr(pUsbdCtxt->pCalCtxt);
-        Cy_USBHS_Cal_ConnUsbPins(pUsbdCtxt->pCalCtxt);
+    /* clear all dev control interrupt and enable required interrupt */
+    Cy_USBHS_Cal_ClearAllDevCtrlIntr(pUsbdCtxt->pCalCtxt);
+    Cy_USBHS_Cal_EnableReqDevCtrlIntr(pUsbdCtxt->pCalCtxt);
+    Cy_USBHS_Cal_ConnUsbPins(pUsbdCtxt->pCalCtxt);
 
     return;
 }   /* End of function */
@@ -2435,12 +2353,12 @@ Cy_USBD_DisconnectDevice (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt)
 #endif
         return;
     }
-        /* disable interrupts */
-        Cy_USBHS_Cal_DisableAllDevCtrlIntr(pUsbdCtxt->pCalCtxt);
-        Cy_USBHS_Cal_DisconUsbPins(pUsbdCtxt->pCalCtxt);
-        /* Since device is disconnected so Flush all endpoint */
-        Cy_USBHS_Cal_FlushAllEndp(pUsbdCtxt->pCalCtxt, CY_USB_ENDP_DIR_IN);
-        Cy_USBHS_Cal_FlushAllEndp(pUsbdCtxt->pCalCtxt, CY_USB_ENDP_DIR_OUT);
+    /* disable interrupts */
+    Cy_USBHS_Cal_DisableAllDevCtrlIntr(pUsbdCtxt->pCalCtxt);
+    Cy_USBHS_Cal_DisconUsbPins(pUsbdCtxt->pCalCtxt);
+    /* Since device is disconnected so Flush all endpoint */
+    Cy_USBHS_Cal_FlushAllEndp(pUsbdCtxt->pCalCtxt, CY_USB_ENDP_DIR_IN);
+    Cy_USBHS_Cal_FlushAllEndp(pUsbdCtxt->pCalCtxt, CY_USB_ENDP_DIR_OUT);
     Cy_USBD_ResetUsbdCommonDs(pUsbdCtxt);
     return;
 }   /* End of function. */
@@ -2774,8 +2692,6 @@ Cy_USB_USBD_ResetController (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt)
 
     if (pUsbdCtxt->devSpeed <= CY_USBD_USB_DEV_HS) {
         Cy_USBHS_Cal_ResetHsController(pUsbdCtxt->pCalCtxt);
-    } else {
-        /* TBD: Need to code for SS */
     }
     return(CY_USBD_STATUS_SUCCESS);
 }   /* End of function Cy_USB_USBD_ResetController() */
@@ -2818,13 +2734,13 @@ Cy_USBD_SendEgressZLP (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt, uint32_t endpNumber)
 
     if (NULL == pUsbdCtxt) {
 #if BL_DEBUG
-        DBG_USBD_ERR("SntEgrZlp:usbdCtxtNull\r\n");
+        DBG_USBD_ERR("SendZLP:usbdCtxtNull\r\n");
 #endif
         return (CY_USBD_STATUS_CTXT_NULL);
     }
 
-        calRetCode =
-            Cy_USBHS_Cal_SendEgressZLP(pUsbdCtxt->pCalCtxt, endpNumber);
+    calRetCode =
+        Cy_USBHS_Cal_SendEgressZLP(pUsbdCtxt->pCalCtxt, endpNumber);
 
     if (CY_USB_CAL_STATUS_SUCCESS == calRetCode) {
         retCode = CY_USBD_STATUS_SUCCESS;
@@ -2853,15 +2769,15 @@ Cy_USBD_ClearZlpSlpIntrEnableMask (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
 
     if (NULL == pUsbdCtxt) {
 #if BL_DEBUG
-        DBG_USBD_ERR("ClrZlpSlpEnaMas:usbdCtxtNull\r\n");
+        DBG_USBD_ERR("ClrEpIntr:usbdCtxtNull\r\n");
 #endif
         return (CY_USBD_STATUS_CTXT_NULL);
     }
 
-        calRetCode =
-            Cy_USBHS_Cal_ClearZlpSlpIntrEnableMask(pUsbdCtxt->pCalCtxt,
-                                                   endpNumber,
-                                                   endpDirection, zlpSlp);
+    calRetCode =
+        Cy_USBHS_Cal_ClearZlpSlpIntrEnableMask(pUsbdCtxt->pCalCtxt,
+                endpNumber,
+                endpDirection, zlpSlp);
     if (CY_USB_CAL_STATUS_SUCCESS == calRetCode) {
         retCode = CY_USBD_STATUS_SUCCESS;
     } else {
@@ -2911,4 +2827,13 @@ Cy_USB_USBD_RetireRecvEndp0DataHs (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt)
     Cy_USBD_FlushEndp(pUsbdCtxt, 0x00, CY_USB_ENDP_DIR_OUT);
     return;
 }   /* End of function */
+
+
+void 
+Cy_USBD_SelectCtleConfig (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
+        cy_en_hs_ctle_sel_t ctleSel)
+{
+    Cy_USBHS_Cal_SetCtleSelValue(pUsbdCtxt->pCalCtxt, ctleSel);
+    return;
+}
 

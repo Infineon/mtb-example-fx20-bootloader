@@ -586,12 +586,13 @@ void Cy_Bl_JumpToApplication(void)
 
 #if BL_DEBUG
     /* Need to disable the debug interface. */
-#if ENABLE_USBFS_DEBUG
-    CyUsbFsCdc_Disable();
-#else
-    CY_SCB_UART_Disable(LOGGING_SCB);
-    Cy_SysClk_PeriphDisableDivider(CY_SYSCLK_DIV_16_BIT, 0);
+    Cy_Debug_LogDeInit();
+
+#if (!ENABLE_USBFS_DEBUG)
+    /* De-initialize the UART if it had been enabled. */
+    DeInitUart(LOGGING_SCB_IDX);
 #endif /* ENABLE_USBFS_DEBUG */
+
 #endif /* BL_DEBUG */
 
     CPUSS->CM0_VECTOR_TABLE_BASE = (uint32_t)JUMP_ADDRESS;

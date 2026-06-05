@@ -205,7 +205,7 @@
 #define CY_USB_ENDP_ADDL_XN_POS         (3U)
 
 typedef struct cy_stc_usb_usbd_ctxt_ cy_stc_usb_usbd_ctxt_t;
-typedef void (* cy_usb_usbd_callback_t) (void *pAppCtxt, 
+typedef void (* cy_usb_usbd_callback_t) (void *pAppCtxt,
                                          cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
                                          cy_stc_usb_cal_msg_t *pMsg);
 
@@ -335,6 +335,7 @@ typedef enum cy_en_usbd_ret_code_ {
     CY_USBD_STATUS_TIMEOUT,
     CY_USBD_STATUS_DSCR_FIELD_NOT_SUPPORTED,
 }cy_en_usbd_ret_code_t;
+
 
 
 /*
@@ -626,11 +627,11 @@ void Cy_USBD_SendAckSetupDataStatusStage(cy_stc_usb_usbd_ctxt_t *pUsbdCtxt);
 cy_en_usbd_ret_code_t Cy_USB_USBD_SendEndp0Data
                                       (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
                                        uint8_t *pBuffer, uint32_t bufferSize);
-                                       
+
 cy_en_usbd_ret_code_t Cy_USB_USBD_SendEndp0DataSs
                                       (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
                                        uint8_t *pBuffer, uint32_t bufferSize);
-                                     
+
 cy_en_usbd_ret_code_t Cy_USB_USBD_SendEndp0DataHs
                                       (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
                                        uint8_t *pBuffer, uint32_t bufferSize);
@@ -639,12 +640,12 @@ cy_en_usbd_ret_code_t Cy_USB_USBD_RecvEndp0Data
                                       (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
                                        uint8_t *pBuffer, uint32_t bufferSize);
 
-cy_en_usbd_ret_code_t 
-Cy_USB_USBD_RecvEndp0DataHs (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt, 
+cy_en_usbd_ret_code_t
+Cy_USB_USBD_RecvEndp0DataHs (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
                                     uint8_t *pBuffer, uint32_t bufferSize);
-                                    
-cy_en_usbd_ret_code_t 
-Cy_USB_USBD_RecvEndp0DataSs (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt, 
+
+cy_en_usbd_ret_code_t
+Cy_USB_USBD_RecvEndp0DataSs (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
                                     uint8_t *pBuffer, uint32_t bufferSize);
 
 void Cy_USBD_ConnectDevice(cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
@@ -730,7 +731,7 @@ void  Cy_USBD_InitUsbDscrPtrs(cy_stc_usb_set_dscr_ptrs_t *pDscr);
 
 cy_en_usbd_ret_code_t Cy_USB_USBD_Init(void *pAppCtxt,
                                        cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
-                                       DMAC_Type *pCpuDmacBase, 
+                                       DMAC_Type *pCpuDmacBase,
                                        cy_stc_usb_cal_ctxt_t *pCalCtxt);
 void Cy_USB_USBD_DisableHsDevice(cy_stc_usb_usbd_ctxt_t *pUsbdCtxt);
 void Cy_USB_USBD_EnableHsDevice(cy_stc_usb_usbd_ctxt_t *pUsbdCtxt);
@@ -760,8 +761,12 @@ void Cy_USB_USBD_RetireRecvEndp0DataHs(cy_stc_usb_usbd_ctxt_t *pUsbdCtxt);
 
 cy_en_usbd_ret_code_t Cy_USB_USBD_RetireRecvEndp0Data(cy_stc_usb_usbd_ctxt_t *pUsbdCtxt);
 
-cy_en_usbd_ret_code_t Cy_USBD_DebugRegisterCallback (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt, 
+cy_en_usbd_ret_code_t Cy_USBD_DebugRegisterCallback (cy_stc_usb_usbd_ctxt_t *pUsbdCtxt,
         uint8_t debugOutEp, cy_en_usb_usbd_cb_t callBackType, cy_usb_usbd_callback_t callBackFunc);
+
+void Cy_USBD_SelectCtleConfig(cy_stc_usb_usbd_ctxt_t *pUsbdCtxt, 
+        cy_en_hs_ctle_sel_t ctleSel);
+
 
 #endif /* (CY_USB_USBD_H) */
 

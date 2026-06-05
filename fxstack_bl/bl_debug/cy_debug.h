@@ -348,6 +348,18 @@ typedef struct cy_stc_debug_context_
  ****************************************************************************/
 void InitUart(uint8_t scbIndex);
 
+/*****************************************************************************
+ * Function Name: DeInitUart
+ *************************************************************************//**
+ *
+ *  De-initialize SCB which was used for logging.
+ *
+ * \param scbIndex
+ * Index of SCB to be de-initialized.
+ *
+ ****************************************************************************/
+void DeInitUart(uint8_t scbIndex);
+
 /*******************************************************************************
  * Function name: Cy_Debug_LogInit
  ****************************************************************************//**
@@ -361,6 +373,14 @@ void InitUart(uint8_t scbIndex);
 void Cy_Debug_LogInit(cy_stc_debug_config_t *pDbgCfg);
 
 
+/*******************************************************************************
+ * Function name: Cy_Debug_LogDeInit
+ ****************************************************************************//**
+ *
+ * The API de-initializes the debug logger module.
+ *
+ *******************************************************************************/
+cy_en_debug_status_t Cy_Debug_LogDeInit(void);
 
 /*******************************************************************************
  * Function name: Cy_Debug_AddToLog

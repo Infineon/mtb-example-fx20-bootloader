@@ -157,27 +157,57 @@ void InitUart (uint8_t scbIndex)
         break;
     }
 
-    memset((void *)&uartCfg, 0, sizeof(uartCfg));
+    if (pSCB != NULL) {
+        memset((void *)&uartCfg, 0, sizeof(uartCfg));
 
-    /* Divide 8.33 MHz clock by 9 to get baud rate of ~921600. */
-    uartCfg.oversample = 9;
-    uartCfg.uartMode   = CY_SCB_UART_STANDARD;
-    uartCfg.dataWidth  = 8;
-    uartCfg.enableMsbFirst = false;
-    uartCfg.stopBits   = CY_SCB_UART_STOP_BITS_1;
-    uartCfg.parity     = CY_SCB_UART_PARITY_NONE;
-    uartCfg.breakWidth = 12;
-    uartCfg.rxFifoTriggerLevel = 4;
-    uartCfg.txFifoTriggerLevel = 4;
+        /* Divide 8.33 MHz clock by 9 to get baud rate of ~921600. */
+        uartCfg.oversample = 9;
+        uartCfg.uartMode   = CY_SCB_UART_STANDARD;
+        uartCfg.dataWidth  = 8;
+        uartCfg.enableMsbFirst = false;
+        uartCfg.stopBits   = CY_SCB_UART_STOP_BITS_1;
+        uartCfg.parity     = CY_SCB_UART_PARITY_NONE;
+        uartCfg.breakWidth = 12;
+        uartCfg.rxFifoTriggerLevel = 4;
+        uartCfg.txFifoTriggerLevel = 4;
 
-    if (Cy_SysClk_ClkPeriGetFrequency() == 60000000UL) {
-        /* Divide 12 MHz clock by 13 to get baud rate of ~921600. */
-        uartCfg.oversample = 13;
+        if (Cy_SysClk_ClkPeriGetFrequency() == 60000000UL) {
+            /* Divide 12 MHz clock by 13 to get baud rate of ~921600. */
+            uartCfg.oversample = 13;
+        }
+
+        /* Configure and enable the SCB block as UART. */
+        Cy_SCB_UART_Init(pSCB, &uartCfg, &gUartCtxt);
+        Cy_SCB_UART_Enable(pSCB);
+    }
+}
+
+void DeInitUart (uint8_t scbIndex)
+{
+    CySCB_Type *pSCB = NULL;
+
+    switch (scbIndex) {
+    case 0:
+        pSCB = SCB0;
+        break;
+
+    case 1:
+        pSCB = SCB1;
+        break;
+
+    case 4:
+        pSCB = SCB4;
+        break;
+
+    default:
+        break;
     }
 
-    /* Configure and enable the SCB block as UART. */
-    Cy_SCB_UART_Init(pSCB, &uartCfg, &gUartCtxt);
-    Cy_SCB_UART_Enable(pSCB);
+    if (pSCB != NULL) {
+        Cy_SCB_UART_Disable(pSCB,&gUartCtxt);
+        Cy_SCB_UART_DeInit(pSCB);
+        Cy_SysClk_PeriphDisableDivider(CY_SYSCLK_DIV_16_BIT, 0);
+    }
 }
 
 #endif /*BL_DEBUG*/

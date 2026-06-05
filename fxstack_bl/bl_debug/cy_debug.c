@@ -37,11 +37,7 @@ extern "C" {
 
 #if BL_DEBUG
 
-/* Use DMAC to send data to the UART. */
-#define LOGGER_DMAC_ENABLE      (0u)
-
 static cy_stc_debug_context_t glDbgCtx = {0};
-
 
 /*******************************************************************************
  * Function name: Cy_Debug_LogInit
@@ -160,6 +156,7 @@ void Cy_Debug_LogInit (cy_stc_debug_config_t *pDbgCfg)
             dmaTrigSrc = TRIG_IN_MUX_5_SCB6_TX_REQ;
             break;
 
+#if ENABLE_USBFS_DEBUG
         case CY_DEBUG_INTFCE_USBFS_CDC:
             glDbgCtx.maxDmaSize = 64u;
 
@@ -167,21 +164,35 @@ void Cy_Debug_LogInit (cy_stc_debug_config_t *pDbgCfg)
             CyUsbFsCdc_Init();
             CyUsbFsCdc_Enable();
             break;
+#endif /* ENABLE_USBFS_DEBUG */
 
         case CY_DEBUG_INTFCE_RAM:
         default:
             break;
     }
-
-#if LOGGER_DMAC_ENABLE
-    /* Enable the DMAC block. */
-    if (glDbgCtx.pDbgScb != NULL) {
-        Cy_DMAC_Enable(DMAC);
-        Cy_TrigMux_Connect(dmaTrigSrc, TRIG_OUT_MUX_5_MDMA_TR_IN5, false, TRIGGER_TYPE_LEVEL);
-    }
-#endif /* LOGGER_DMAC_ENABLE */
 }
 
+/*******************************************************************************
+ * Function name: Cy_Debug_LogDeInit
+ ****************************************************************************//**
+ *
+ * The API de-initializes the debug logger module.
+ *
+ *******************************************************************************/
+cy_en_debug_status_t Cy_Debug_LogDeInit (void)
+{
+#if ENABLE_USBFS_DEBUG
+    if (glDbgCtx.intfc == CY_DEBUG_INTFCE_USBFS_CDC)
+    {
+        CyUsbFsCdc_Disable();
+    }
+#endif /* ENABLE_USBFS_DEBUG */
+
+    /* Clear the debug context data structure. */
+    memset(&glDbgCtx,0,sizeof(glDbgCtx));
+
+    return CY_DEBUG_STATUS_SUCCESS;
+}
 
 /*******************************************************************************
  * Function name: Cy_Debug_SetPrintNow
@@ -229,6 +240,11 @@ static cy_en_debug_status_t Cy_Debug_AddToBuffer (char *message, va_list argp)
     int32_t   intArg;
     uint32_t  intrState, uintArg;
     uint8_t   convertedString[11];
+
+    /* Make sure we have a valid buffer to store the log data into. */
+    if (glDbgCtx.pMsg == NULL) {
+        return CY_DEBUG_STATUS_FAILURE;
+    }
 
     /* Parse the string and copy into the buffer for sending out. */
     for (string_p = (uint8_t *)message, i = 0; (*string_p != '\0'); string_p++) {
@@ -371,70 +387,14 @@ cy_en_debug_status_t Cy_Debug_AddToLog (uint8_t dbgLevel,
     status = Cy_Debug_AddToBuffer(message, argp);
     va_end(argp);
 
-    if (glDbgCtx.printNow == true) {
+    if ((status == CY_DEBUG_STATUS_SUCCESS) && (glDbgCtx.printNow == true)) {
         Cy_Debug_PrintLog();
     }
 
     return status;
 }
 
-#if LOGGER_DMAC_ENABLE
-/* Internal function which sets up the DMAC descriptors used for log data output. */
-static void Cy_Debug_ConfigDmaDscr (uint32_t *dmadscr_p, uint16_t rdPtr, uint16_t size, bool havePendingData)
-{
-    uint16_t maxSize  = glDbgCtx.maxDmaSize;
-    uint16_t sizemask = maxSize - 1;
-
-    dmadscr_p[1] = (uint32_t)glDbgCtx.pMsg + rdPtr;
-    dmadscr_p[2] = (uint32_t)&((CySCB_Type *)glDbgCtx.pDbgScb)->TX_FIFO_WR;
-
-    if (size > maxSize) {
-        if ((size & sizemask) != 0) {
-            dmadscr_p[0] = 0x2800007EUL;
-            dmadscr_p[3] = sizemask;
-            dmadscr_p[4] = 0x00000001UL;
-            dmadscr_p[5] = (size / maxSize) - 1;
-            dmadscr_p[6] = maxSize;
-            dmadscr_p[7] = (uint32_t)(dmadscr_p + 8);
-
-            dmadscr_p[8]  = 0x1900007EUL;
-            dmadscr_p[9]  = dmadscr_p[1] + (size & ~sizemask);
-            dmadscr_p[10] = dmadscr_p[2];
-            dmadscr_p[11] = (size & sizemask) - 1;
-            dmadscr_p[12] = 0x00000001UL;
-            dmadscr_p[13] = 0x00000000UL;
-
-            if (havePendingData) {
-                dmadscr_p[8]  = 0x1800007EUL;
-                dmadscr_p[13] = (uint32_t)(dmadscr_p + 16);
-            }
-        } else {
-            dmadscr_p[0] = 0x2900007EUL;
-            dmadscr_p[3] = sizemask;
-            dmadscr_p[4] = 0x00000001UL;
-            dmadscr_p[5] = (size / maxSize) - 1;
-            dmadscr_p[6] = maxSize;
-            dmadscr_p[7] = 0x00000000UL;
-
-            if (havePendingData) {
-                dmadscr_p[0] = 0x2800007EUL;
-                dmadscr_p[7] = (uint32_t)(dmadscr_p + 16);
-            }
-        }
-    } else {
-        dmadscr_p[0] = 0x1900007EUL;
-        dmadscr_p[3] = size - 1;
-        dmadscr_p[4] = 0x00000001UL;
-        dmadscr_p[5] = 0x00000000UL;
-
-        if (havePendingData) {
-            dmadscr_p[0] = 0x1800007EUL;
-            dmadscr_p[5] = (uint32_t)(dmadscr_p + 16);
-        }
-    }
-}
-#endif /* LOGGER_DMAC_ENABLE */
-
+#if ENABLE_USBFS_DEBUG
 /* Internal function used to output log data through USBFS CDC IN endpoint. */
 static uint16_t Cy_Debug_LogtoUsbFS (uint16_t rdPtr, uint16_t limit)
 {
@@ -445,6 +405,7 @@ static uint16_t Cy_Debug_LogtoUsbFS (uint16_t rdPtr, uint16_t limit)
         size = ((limit - rdPtr) > glDbgCtx.maxDmaSize) ? glDbgCtx.maxDmaSize : (limit - rdPtr);
         usbstat = CyUsbFsCdc_EpDataWrite(1, glDbgCtx.pMsg + rdPtr, size);
         if (!usbstat) {
+            Cy_SysLib_DelayUs(10);
             break;
         }
 
@@ -453,6 +414,7 @@ static uint16_t Cy_Debug_LogtoUsbFS (uint16_t rdPtr, uint16_t limit)
 
     return (rdPtr);
 }
+#endif /* ENABLE_USBFS_DEBUG */
 
 /*******************************************************************************
  * Function name: Cy_Debug_PrintLog
@@ -464,78 +426,6 @@ static uint16_t Cy_Debug_LogtoUsbFS (uint16_t rdPtr, uint16_t limit)
  * \return
  * void
  *******************************************************************************/
-#if LOGGER_DMAC_ENABLE
-void Cy_Debug_PrintLog(void)
-{
-    uint16_t size;
-    uint32_t intrState;
-    uint32_t *dmadscr_p = glDbgCtx.dbgDmaDscr[0];
-    cy_stc_dmac_channel_config_t chnConf;
-
-    /* Prevent multiple-execution of print tasks in parallel. */
-    intrState = Cy_SysLib_EnterCriticalSection();
-    if (glDbgCtx.inProgress) {
-        Cy_SysLib_ExitCriticalSection(intrState);
-        return;
-    }
-    glDbgCtx.inProgress = true;
-    Cy_SysLib_ExitCriticalSection(intrState);
-
-    chnConf.priority   = 2UL;
-    chnConf.enable     = true;
-    chnConf.bufferable = false;
-    chnConf.descriptor = (cy_stc_dmac_descriptor_t *)dmadscr_p;
-
-    if (glDbgCtx.rdPtr == glDbgCtx.wrPtr) {
-        glDbgCtx.inProgress = false;
-        return;
-    }
-
-    if (glDbgCtx.intfc == CY_DEBUG_INTFCE_USBFS_CDC) {
-        intrState = Cy_SysLib_EnterCriticalSection();
-        if (glDbgCtx.rdPtr > glDbgCtx.wrPtr) {
-            glDbgCtx.rdPtr = Cy_Debug_LogtoUsbFS(glDbgCtx.rdPtr, glDbgCtx.bufSize);
-            if (glDbgCtx.rdPtr == glDbgCtx.bufSize) {
-                glDbgCtx.rdPtr = 0;
-            }
-        }
-
-        if (glDbgCtx.rdPtr < glDbgCtx.wrPtr) {
-            glDbgCtx.rdPtr = Cy_Debug_LogtoUsbFS(glDbgCtx.rdPtr, glDbgCtx.wrPtr);
-        }
-        glDbgCtx.inProgress = false;
-        Cy_SysLib_ExitCriticalSection(intrState);
-        return;
-    }
-
-    /* If the DMA channel is busy, wait for a short time to let it complete. */
-    while (Cy_DMAC_Channel_IsEnabled(DMAC, 5)) {
-        Cy_SysLib_DelayUs(10);
-    }
-
-    /* Prevent race conditions by not allowing other task/intr to execute in the middle of the logging procedure. */
-    intrState = Cy_SysLib_EnterCriticalSection();
-
-    if (glDbgCtx.rdPtr < glDbgCtx.wrPtr) {
-        size = (glDbgCtx.wrPtr - glDbgCtx.rdPtr);
-        Cy_Debug_ConfigDmaDscr(dmadscr_p, glDbgCtx.rdPtr, size, false);
-    } else {
-        size = (glDbgCtx.bufSize - glDbgCtx.rdPtr);
-        Cy_Debug_ConfigDmaDscr(dmadscr_p, glDbgCtx.rdPtr, size, (glDbgCtx.wrPtr > 0));
-
-        if (glDbgCtx.wrPtr != 0) {
-            dmadscr_p += 16;
-            Cy_Debug_ConfigDmaDscr(dmadscr_p, 0, glDbgCtx.wrPtr, false);
-        }
-    }
-
-    Cy_DMAC_Channel_Init(DMAC, 5, &chnConf);
-    glDbgCtx.rdPtr = glDbgCtx.wrPtr;
-    glDbgCtx.inProgress = false;
-
-    Cy_SysLib_ExitCriticalSection(intrState);
-}
-#else
 void Cy_Debug_PrintLog(void)
 {
     uint16_t size;
@@ -556,22 +446,30 @@ void Cy_Debug_PrintLog(void)
         return;
     }
 
+#if ENABLE_USBFS_DEBUG
     if (glDbgCtx.intfc == CY_DEBUG_INTFCE_USBFS_CDC) {
         intrState = Cy_SysLib_EnterCriticalSection();
-        if (glDbgCtx.rdPtr > glDbgCtx.wrPtr) {
-            glDbgCtx.rdPtr = Cy_Debug_LogtoUsbFS(glDbgCtx.rdPtr, glDbgCtx.bufSize);
-            if (glDbgCtx.rdPtr == glDbgCtx.bufSize) {
-                glDbgCtx.rdPtr = 0;
-            }
+
+        if (CyUsbFsCdc_IsPortEnabled()) {
+            do {
+                if (glDbgCtx.rdPtr > glDbgCtx.wrPtr) {
+                    glDbgCtx.rdPtr = Cy_Debug_LogtoUsbFS(glDbgCtx.rdPtr, glDbgCtx.bufSize);
+                    if (glDbgCtx.rdPtr == glDbgCtx.bufSize) {
+                        glDbgCtx.rdPtr = 0;
+                    }
+                }
+
+                if (glDbgCtx.rdPtr < glDbgCtx.wrPtr) {
+                    glDbgCtx.rdPtr = Cy_Debug_LogtoUsbFS(glDbgCtx.rdPtr, glDbgCtx.wrPtr);
+                }
+            } while ((glDbgCtx.printNow) && (glDbgCtx.rdPtr != glDbgCtx.wrPtr));
         }
 
-        if (glDbgCtx.rdPtr < glDbgCtx.wrPtr) {
-            glDbgCtx.rdPtr = Cy_Debug_LogtoUsbFS(glDbgCtx.rdPtr, glDbgCtx.wrPtr);
-        }
         glDbgCtx.inProgress = false;
         Cy_SysLib_ExitCriticalSection(intrState);
         return;
     }
+#endif /* ENABLE_USBFS_DEBUG */
 
     /* Prevent race conditions by not allowing other task/intr to execute in the middle of the logging procedure. */
     intrState = Cy_SysLib_EnterCriticalSection();
@@ -596,7 +494,6 @@ void Cy_Debug_PrintLog(void)
     glDbgCtx.inProgress = false;
     Cy_SysLib_ExitCriticalSection(intrState);
 }
-#endif /* LOGGER_DMAC_ENABLE */
 
 /*******************************************************************************
  * Function name: Cy_Debug_ChangeLogLevel
@@ -645,12 +542,14 @@ void Cy_Debug_ChangeLogLevel(uint8_t level)
 bool Cy_Debug_QueueDataRead (uint8_t *pReadBuffer, uint16_t dataLength,
                              cy_cb_debug_data_recv_cb_t doneCbk, void *pUserCtxt)
 {
+#if ENABLE_USBFS_DEBUG
     /* Operation only supported when USBFS CDC is used for debug and connection
      * is present.
      */
-    if (!(glDbgCtx.intfc != CY_DEBUG_INTFCE_USBFS_CDC)) {
+    if (glDbgCtx.intfc != CY_DEBUG_INTFCE_USBFS_CDC) {
         return false;
     }
+
     /* If parameters are not valid or if read is already queued, return error. */
     if (
             (pReadBuffer == NULL) || (doneCbk == NULL) || (dataLength == 0) ||
@@ -670,8 +569,12 @@ bool Cy_Debug_QueueDataRead (uint8_t *pReadBuffer, uint16_t dataLength,
     CyUsbFsCdc_QueueEpRead(2);
 
     return true;
+#else
+    return false;
+#endif /* ENABLE_USBFS_DEBUG */
 }
 
+#if ENABLE_USBFS_DEBUG
 /*******************************************************************************
  * Function name: Cy_Debug_HandleReadIntr
  ****************************************************************************//**
@@ -702,6 +605,7 @@ void Cy_Debug_HandleReadIntr (void)
         CyUsbFsCdc_QueueEpRead(2);
     }
 }
+#endif /* ENABLE_USBFS_DEBUG */
 
 #endif /*BL_DEBUG*/
 
